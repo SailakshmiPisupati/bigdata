@@ -10,12 +10,25 @@
 </head>
 
 <body id="home">
-
     <h1>Web Socket Example</h1>
-    <p>
-        open console to see connection.
-    </p>
+    <p>Open Console to see connection.</p>
+
     <script>
+        /*
+        ** Example of a DoS attack **
+
+        setInterval( () => {
+            let ws1 = new WebSocket('ws://localhost:40510')
+
+            ws1.onopen = function () {
+                console.log('Websocket Connected!')
+                ws.send('Websocket Connected!')
+            }
+        }, 1000)
+
+        **
+        */
+
         var ws = new WebSocket('ws://localhost:40510');
 
         ws.onopen = function () {

@@ -15,7 +15,6 @@
 
 ## Links
 - https://github.com/websockets/ws
-- Rate
 
 ## NodeJS debugger
 ``` bash

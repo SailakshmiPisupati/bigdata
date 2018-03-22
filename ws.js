@@ -1,14 +1,16 @@
-const url = require('url'),
-  WebSocketServer = require('ws').Server,
-  wss = new WebSocketServer({
-    port: 40510,
-    // ** Same Origin Policy implemented here - **
-    // this only allows websocket connections from the specified origin
-    origin: 'http://localhost:3000'
-  });
+const WebSocketServer = require('ws').Server,
+      wss = new WebSocketServer({
+        port: 40510,
+        // ** Same Origin Policy implemented here - **
+        // this only allows websocket connections from the specified origin
+        origin: 'http://localhost:3000'
+      }),
+      url = require('url'),
+      rateLimit = require('./rate-limit.js'),
+      limit = rateLimit('.5d', 10000);
 
-
-wss.on('connection', function (ws, req) {
+wss.on('connection', (ws, req) => {
+  limit(ws)
 
   const location = url.parse(req.url, true);
   const ip = req.connection.remoteAddress;
