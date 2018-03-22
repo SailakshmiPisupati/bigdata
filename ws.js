@@ -1,11 +1,12 @@
 const url = require('url'),
   WebSocketServer = require('ws').Server,
   wss = new WebSocketServer({
+  	// server : httpsServer
     port: 40510,
     // ** Same Origin Policy implemented here - **
     // this only allows websocket connections from the specified origin
-    origin: 'http://localhost:3000'
-  });
+    origin: 'https://localhost:3000'
+ });
 
 
 wss.on('connection', function (ws, req) {
