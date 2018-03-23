@@ -6,6 +6,13 @@ const express = require('express'),
       http = require('http'),
       forceSsl = require('express-force-ssl');
 
+app.set('forceSSLOptions', {
+  enable301Redirects: true,
+  trustXFPHeader: false,
+  httpsPort: 3001,
+  sslRequiredMessage: 'SSL Required.'
+});
+
 app.use(forceSsl);
 
 app.get('/', function (req, res) {
