@@ -14,26 +14,27 @@
     <p>Open Console to see connection.</p>
 
     <script>
-        /*
-        ** Example of a DoS attack **
+        /** Example of a DoS attack **
 
-        setInterval( () => {
-            let ws1 = new WebSocket('ws://localhost:40510')
+            setInterval( () => {
+                let ws1 = new WebSocket('ws://localhost:40510')
 
-            ws1.onopen = function () {
-                console.log('Websocket Connected!')
-                ws.send('Websocket Connected!')
-            }
-        }, 1000)
-
-        **
+                ws1.onopen = function () {
+                    console.log('Websocket Connected!')
+                    ws.send('Websocket Connected!')
+                }
+            }, 1000)
         */
 
-        var ws = new WebSocket('ws://localhost:40510');
+        /*
+           FIXME - write if else for ws / wss according to the http or https ?
+           const ws = new WebSocket('ws://localhost:40510');
+        */
+        const ws = new WebSocket('wss://localhost:40510');
 
         ws.onopen = function () {
             console.log('Websocket Connected!')
-            ws.send('Websocket Connected!')
+            ws.send('Ping')
         }
 
         ws.onmessage = function (data) {
@@ -42,7 +43,6 @@
 
         ws.onclose = function () {
             console.log('Websocket Disconnected!')
-            ws.send('Websocket Disconnected!')
         }
     </script>
 </body>

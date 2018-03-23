@@ -5,3 +5,8 @@ npm-debug.log*
 
 # Dependency directories
 node_modules/
+encryption/
+
+#keys
+*.pem
+*.crt

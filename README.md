@@ -25,3 +25,23 @@ debugger;
 npm run inspect
 
 ```
+
+## Creating SSL over NodeJS
+
+#### Create the SSL Certificate : 
+
+Run the following command to create the certificates
+
+```
+mkdir encryption
+openssl req -newkey rsa:2048 -new -nodes -keyout key.pem -out csr.pem openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out server.crt
+```
+
+#### Enter the details prompted
+
+Enable the SSL Experimenter : //chrome:/flags
+	Enable TSL13
+
+### WSS in NodeJS
+
+The wss request headers are not shown in Chrome. Use Firefox to test the wss implementation.
