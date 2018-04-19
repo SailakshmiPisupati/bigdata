@@ -6,7 +6,6 @@ http://www.giacomovacca.com/2015/02/websockets-over-nodejs-from-plain-to.html
 */
 
 const express = require('express'),
-      ws = require('./ws'),
       app = express(),
       fs = require("fs"),
       https = require("https"),
@@ -33,15 +32,18 @@ const wss = new WebSocketServer({
 
 wss.on('connection', (ws, req) => {
   limit(ws)
+  ws.isAlive = true;
+
+  ws.send('All glory to WebSockets!');
 
   // const location = url.parse(req.url, true);
   // console.log('req: ', Object.keys(req));
-  console.log('req.headers.origin: ', req.headers.origin); // Client IP
-  console.log('req.url: ', req.url); // path of websocket url
-  console.log('req.connection.remoteAddress: ', req.connection.remoteAddress);
+  console.log('Origin: ', req.headers.origin); // Client IP
+  console.log('URL: ', req.url); // path of websocket url
+  console.log('remoteAddress: ', req.connection.remoteAddress);
   // console.log('req.headers: ', Object.keys(req.headers));
-  console.log('req.headers.cookie: ', req.headers.cookie);
-  console.log('req.headers[\'x-forwarded-for\']: ', req.headers['x-forwarded-for']);
+  console.log('Cookie: ', req.headers.cookie);
+  console.log('x-forwarded-for: ', req.headers['x-forwarded-for']);
 
   /*
       ** Authentication **
@@ -55,14 +57,19 @@ wss.on('connection', (ws, req) => {
   })
 
   try {
-    setInterval(() => ws.send(`${new Date()}`), 1000)
+    const sendInterval = setInterval(() => {
+      if (ws.isAlive) {
+        ws.send(`${new Date()}`)
+      }
+
+    }, 1000)
   } catch (e) {
     /* handle error */
-    console.error('WS send Error caught !')
+    ws.isAlive = false;
+    console.log('WS send Error caught !')
     throw e
   }
 
-  ws.isAlive = true;
   ws.on('pong', () => {
     this.isAlive = true;
   });
