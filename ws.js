@@ -61,4 +61,19 @@ wss.on('connection', (ws, req) => {
     console.error('WS send Error caught !')
     throw e
   }
+
+  ws.isAlive = true;
+  ws.on('pong', () => {
+    this.isAlive = true;
+  });
+
 });
+
+const interval = setInterval(function ping() {
+  wss.clients.forEach((ws) =>{
+    if (ws.isAlive === false) return ws.terminate();
+
+    ws.isAlive = false;
+    ws.ping(() => { });
+  });
+}, 30000);

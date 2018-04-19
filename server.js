@@ -1,10 +1,13 @@
 const express = require('express'),
+      path = require('path'),
       ws = require('./ws'),
       app = express(),
       fs = require("fs"),
       https = require("https"),
       http = require('http'),
       forceSsl = require('express-force-ssl');
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('forceSSLOptions', {
   enable301Redirects: true,

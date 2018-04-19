@@ -27,8 +27,9 @@ npm run inspect
 ```
 
 ## Creating SSL over NodeJS
-
-#### Create the SSL Certificate : 
+- https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development
+- https://blog.cloudboost.io/everything-about-creating-an-https-server-using-node-js-2fc5c48a8d4e
+#### Create the SSL Certificate :
 
 Run the following command to create the certificates
 
