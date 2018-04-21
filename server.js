@@ -8,6 +8,7 @@ const express = require('express'),
       forceSsl = require('express-force-ssl');
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
 
 app.set('forceSSLOptions', {
   enable301Redirects: true,
@@ -27,8 +28,8 @@ http.createServer(app).listen(3000, function () {
 });
 
 https.createServer({
-  key: fs.readFileSync('encryption/server.key', 'utf8'),
-  cert: fs.readFileSync('encryption/server.crt', 'utf8')
+  key: fs.readFileSync('encryption/key.pem', 'utf8'),
+  cert: fs.readFileSync('encryption/cert.pem', 'utf8')
 }, app).listen(3001, function () {
    console.log('HTTPS App listening on port 3001')
 });

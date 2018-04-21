@@ -15,20 +15,43 @@ const express = require('express'),
       WebSocketServer = require('ws').Server;
 
 const httpsServer = https.createServer({
-  key: fs.readFileSync('encryption/server.key', 'utf8'),
-  cert: fs.readFileSync('encryption/server.crt', 'utf8')
+  key: fs.readFileSync('encryption/key.pem', 'utf8'),
+  cert: fs.readFileSync('encryption/cert.pem', 'utf8')
 }, app).listen(40510, function () {
    console.log('HTTPS Websocket server listening on port 40510')
 });
 
 const wss = new WebSocketServer({
-  /*
-      ** Same Origin Policy **
-      This only allows websocket connections from the specified origin
-  */
-  origin: 'https://localhost:3001',
   server: httpsServer,
-  rejectUnauthorized: false
+  rejectUnauthorized: true,
+  clientTracking: true,
+  verifyClient: (info) => {
+    // console.log('verifyClient', info);
+
+    console.log('---------Verifying Client---------');
+    // const location = url.parse(req.url, true);
+    // console.log('req: ', Object.keys(req));
+    console.log('Origin: ', info.req.headers.origin); // Client IP
+    // console.log('x-forwarded-for: ', info.req.headers['x-forwarded-for']);
+    // console.log('URL: ', info.req.url); // path of websocket url
+    // console.log('remoteAddress: ', info.req.connection.remoteAddress);
+    // console.log('info.req.headers: ', Object.keys(info.req.headers));
+    console.log('Cookie: ', info.req.headers.cookie);
+
+    /*
+        ** Same Origin Policy **
+        This only allows websocket connections from the specified origin
+    */
+    if (info.origin !== 'https://localhost:3001') {
+      return false;
+    }
+
+    if (!info.secure) {
+      return false;
+    }
+
+    return true;
+  }
 });
 
   /*
@@ -38,24 +61,20 @@ const wss = new WebSocketServer({
       or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
   */
 
+// wss.on('headers', (ws, req) => {
+//   console.log('---------Headers---------', ws, req);
+// });
 wss.on('connection', (ws, req) => {
   limit(ws)
   ws.isAlive = true;
 
   console.log('---------Connection Opened---------');
-  // const location = url.parse(req.url, true);
-  // console.log('req: ', Object.keys(req));
-  console.log('Origin: ', req.headers.origin); // Client IP
-  console.log('URL: ', req.url); // path of websocket url
-  console.log('remoteAddress: ', req.connection.remoteAddress);
-  // console.log('req.headers: ', Object.keys(req.headers));
-  console.log('Cookie: ', req.headers.cookie);
-  console.log('x-forwarded-for: ', req.headers['x-forwarded-for']);
-  console.log('------------------------------------');
+
   ws.send('All glory to WebSockets!');
 
   ws.on('message', function (message) {
-    console.log('Message received: %s', message)
+    console.log('---------Message received: ---------%s---------', message);
+    ws.send(message);
   })
 
   ws.on('pong', () => {
@@ -63,7 +82,7 @@ wss.on('connection', (ws, req) => {
   });
 
   ws.on('close', function () {
-    console.log('Connection Closed');
+    console.log('----------------Connection Closed--------------------');
     clearInterval(sendInterval);
   });
 

@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>Web Socket Example</title>
+    <script src="jquery/jquery.min.js"></script>
+
     <!-- <link rel="stylesheet" href="css/style.css"> -->
     <!--[if IE]>
         <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -11,7 +13,17 @@
 
 <body id="home">
     <h1>Web Socket Example</h1>
-    <p>Open Console to see connection.</p>
+    <p>Open Console to see connection.</p><br><br>
+
+    <form id="form">
+      <input type="text" value="Hello there" id="message">
+      <input type="submit" value="Go">
+    </form>
+
+    <h4>Messages </h4>
+    <div id="messages" style="border: 1px solid; font-size: 12px;">
+
+    </div>
 
     <script>
       'use strict';
@@ -28,6 +40,7 @@
             };
             ws.onmessage = function(e){
               console.log(e.data);
+              $("#messages").prepend("<p>" + e.data + "</p>");
             };
             ws.onclose = function(){
               console.log('Websocket closed!');
@@ -44,6 +57,11 @@
 
           start();
           setInterval(check, 5000);
+        });
+
+        $( "#form" ).submit(function( e ) {
+          e.preventDefault();
+          ws.send($('#message').val());
         });
 
 
