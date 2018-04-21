@@ -13,6 +13,7 @@
 
 <body id="home">
     <h1>Web Socket Example</h1>
+    <p>CSRF Token: <%= csrfToken %></p><br><br>
     <p>Open Console to see connection.</p><br><br>
 
     <form id="form">
@@ -29,6 +30,7 @@
       'use strict';
 
         var ws = null;
+        var csrfToken = '<%= csrfToken %>';
 
         document.addEventListener("DOMContentLoaded", function() {
           function start(){
@@ -36,7 +38,7 @@
             ws = new WebSocket("wss://localhost:40510");
             ws.onopen = function(){
                 console.log('Websocket connected!');
-                ws.send('Ping')
+                ws.send('Ping::' + csrfToken)
             };
             ws.onmessage = function(e){
               console.log(e.data);

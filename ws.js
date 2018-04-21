@@ -1,12 +1,10 @@
 /*
-
-http://www.giacomovacca.com/2015/02/websockets-over-nodejs-from-plain-to.html
-- referred this article to setup WSS
-
+  WSS - http://www.giacomovacca.com/2015/02/websockets-over-nodejs-from-plain-to.html
 */
 
 const express = require('express'),
       app = express(),
+      _  = require('lodash'),
       fs = require("fs"),
       https = require("https"),
       url = require('url'),
@@ -34,9 +32,15 @@ const wss = new WebSocketServer({
     console.log('Origin: ', info.req.headers.origin); // Client IP
     // console.log('x-forwarded-for: ', info.req.headers['x-forwarded-for']);
     // console.log('URL: ', info.req.url); // path of websocket url
-    // console.log('remoteAddress: ', info.req.connection.remoteAddress);
+    console.log('remoteAddress: ', info.req.connection.remoteAddress);
     // console.log('info.req.headers: ', Object.keys(info.req.headers));
-    console.log('Cookie: ', info.req.headers.cookie);
+
+
+    let cookies = parseCookies(info.req.headers.cookie);
+    console.log('Cookies: ', cookies);
+
+    // TODO - verify this token and return false if its not correct
+    console.log('CSRF token: ', cookies['_csrf']);
 
     /*
         ** Same Origin Policy **
@@ -54,6 +58,18 @@ const wss = new WebSocketServer({
   }
 });
 
+function parseCookies (cookieString) {
+  var split_read_cookie = cookieString.split(";");
+  var out = {};
+
+  for (let i=0 ; i<split_read_cookie.length;i++){
+    let value = split_read_cookie[i].split("=");
+    out[_.trim(value[0])] = _.trim(value[1]);
+  }
+
+  return out;
+}
+
   /*
       ** Authentication **
 
@@ -61,11 +77,12 @@ const wss = new WebSocketServer({
       or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
   */
 
-// wss.on('headers', (ws, req) => {
-//   console.log('---------Headers---------', ws, req);
-// });
+wss.on('headers', (headers) => {
+  // console.log('---------Headers---------', headers);
+  headers.push('Set-Cookie: my-cookie=qwerty');
+});
 wss.on('connection', (ws, req) => {
-  limit(ws)
+  limit(ws);
   ws.isAlive = true;
 
   console.log('---------Connection Opened---------');
@@ -78,6 +95,7 @@ wss.on('connection', (ws, req) => {
   })
 
   ws.on('pong', () => {
+    console.log('---------PONG---------');
     this.isAlive = true;
   });
 
