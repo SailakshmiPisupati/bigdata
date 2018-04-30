@@ -9,7 +9,7 @@ const express = require('express'),
       https = require("https"),
       url = require('url'),
       rateLimit = require('./rate-limit.js'),
-      limit = rateLimit('.5d', 10000),
+      limit = rateLimit('10s', 1),
       WebSocketServer = require('ws').Server;
 
 const httpsServer = https.createServer({
@@ -18,6 +18,8 @@ const httpsServer = https.createServer({
 }, app).listen(40510, function () {
    console.log('HTTPS Websocket server listening on port 40510')
 });
+
+const csrfConnections = {};
 
 const wss = new WebSocketServer({
   server: httpsServer,
@@ -40,7 +42,8 @@ const wss = new WebSocketServer({
     console.log('Cookies: ', cookies);
 
     // TODO - verify this token and return false if its not correct
-    console.log('CSRF token: ', cookies['_csrf']);
+    let csrf = cookies['_csrf'];
+    console.log('CSRF token: ', csrf);
 
     /*
         ** Same Origin Policy **
@@ -53,6 +56,17 @@ const wss = new WebSocketServer({
     if (!info.secure) {
       return false;
     }
+
+
+    if (csrfConnections.hasOwnProperty(csrf)) {
+      if (csrfConnections[csrf] > 2) {
+
+      }
+    } else {
+      csrfConnections[csrf] = 0;
+    }
+
+    csrfConnections[csrf] += 1;
 
     return true;
   }
@@ -99,10 +113,16 @@ wss.on('connection', (ws, req) => {
     this.isAlive = true;
   });
 
-  ws.on('close', function () {
+  ws.on('close', () => {
     console.log('----------------Connection Closed--------------------');
     clearInterval(sendInterval);
   });
+
+  ws.on('limited', data => {
+    console.log('----------------Limited `' + data + '` !--------------------');
+    console.log(data);
+  })
+
 
   const sendInterval = setInterval(() => {
     if (ws.isAlive) {

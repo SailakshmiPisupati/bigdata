@@ -9,11 +9,52 @@
     <!--[if IE]>
         <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script type="text/javascript">
+        function createCookie(name, value, days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toGMTString();
+            }
+            else var expires = "";
+
+            document.cookie = name + "=" + value + expires + "; path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            createCookie(name, "", -1);
+        }
+
+        window.onload = function () {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "https://api.ipify.org?format=jsonp&callback=displayIP";
+            document.getElementsByTagName("head")[0].appendChild(script);
+
+        };
+        function displayIP(response) {
+            window.IP = response.IP;
+            document.getElementById("ip_address").innerHTML = response.ip;
+            createCookie('ip_address', response.ip);
+        }
+    </script>
 </head>
 
 <body id="home">
     <h1>Web Socket Example</h1>
-    <p>CSRF Token: <%= csrfToken %></p><br><br>
+    <p>CSRF Token: <%= csrfToken %></p><br>
+    <p>IP address: <span id="ip_address"></span></p><br>
     <p>Open Console to see connection.</p><br><br>
 
     <form id="form">
@@ -32,7 +73,7 @@
         var ws = null;
         var csrfToken = '<%= csrfToken %>';
 
-        document.addEventListener("DOMContentLoaded", function() {
+        $(() => {
           function start(){
 
             ws = new WebSocket("wss://localhost:40510");
@@ -40,13 +81,14 @@
                 console.log('Websocket connected!');
                 ws.send('Ping::' + csrfToken)
             };
+
             ws.onmessage = function(e){
-              console.log(e.data);
+              console.log('Message received', e.data);
               $("#messages").prepend("<p>" + e.data + "</p>");
             };
+
             ws.onclose = function(){
               console.log('Websocket closed!');
-
               // reconnect now
               check();
             };
