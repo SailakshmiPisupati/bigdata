@@ -52,10 +52,9 @@
 </head>
 
 <body id="home">
-    <h1>Web Socket Example</h1>
-    <p>CSRF Token: <%= csrfToken %></p><br>
-    <p>IP address: <span id="ip_address"></span></p><br>
-    <p>Open Console to see connection.</p><br><br>
+    <h2>Web Socket Example</h2>
+    <p>CSRF Token: <%= csrfToken %></p>
+    <p>IP address: <span id="ip_address"></span></p>
 
     <form id="form">
       <input type="text" value="Hello there" id="message">
@@ -79,7 +78,7 @@
             ws = new WebSocket("wss://localhost:40510");
             ws.onopen = function(){
                 console.log('Websocket connected!');
-                ws.send('Ping::' + csrfToken)
+                ws.send('Ping');
             };
 
             ws.onmessage = function(e){

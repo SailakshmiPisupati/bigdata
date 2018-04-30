@@ -1,8 +1,8 @@
 'use strict'
 
-const duration = require('css-duration')
+const _ = require('lodash');
 
-module.exports = rateLimit
+const duration = require('css-duration')
 
 /**
  * Rate limit a `ws` client.
@@ -15,8 +15,11 @@ module.exports = rateLimit
  * })
  * ```
  */
+
+
 function rateLimit (rate, max) {
   const clients = []
+  const IPAddresses = {};
 
   // Create an interval that resets message counts
   setInterval(() => {
@@ -25,15 +28,26 @@ function rateLimit (rate, max) {
   }, duration(rate))
 
   // Apply limiting to client:
-  return function limit (client) {
+  return function limit (client, req) {
     client.messageCount = 0
     client.on('newListener', function (name, listener) {
       if (name !== 'message' || listener._rated) return
 
+      let cookies = parseCookies(req.headers.cookie);
+      let ip_address = cookies['ip_address'];
+      if (!IPAddresses.hasOwnProperty(ip_address))
+        IPAddresses[ip_address] = 0;
+
       // Rate limiting wrapper over listener:
       function ratedListener (data, flags) {
-        if (client.messageCount++ < max) listener(data, flags)
-        else client.emit('limited', data, flags)
+        if (client.messageCount++ >= max) {
+          client.emit('limited', data, flags)
+        } else if (IPAddresses[ip_address]++ >= max) {
+          client.emit('limited', data, flags)
+          console.log('IP rate limiting');
+        } else {
+          listener(data, flags)
+        }
       }
       ratedListener._rated = true
       client.on('message', ratedListener)
@@ -47,3 +61,17 @@ function rateLimit (rate, max) {
     client.on('close', () => clients.splice(clients.indexOf(client), 1))
   }
 }
+
+function parseCookies (cookieString) {
+  var split_read_cookie = cookieString.split(";");
+  var out = {};
+
+  for (let i=0 ; i<split_read_cookie.length;i++){
+    let value = split_read_cookie[i].split("=");
+    out[_.trim(value[0])] = _.trim(value[1]);
+  }
+
+  return out;
+}
+
+module.exports = rateLimit;

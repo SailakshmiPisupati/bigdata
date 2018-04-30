@@ -9,7 +9,7 @@ const express = require('express'),
       https = require("https"),
       url = require('url'),
       rateLimit = require('./rate-limit.js'),
-      limit = rateLimit('10s', 1),
+      limit = rateLimit('10s', 10),
       WebSocketServer = require('ws').Server;
 
 const httpsServer = https.createServer({
@@ -18,8 +18,6 @@ const httpsServer = https.createServer({
 }, app).listen(40510, function () {
    console.log('HTTPS Websocket server listening on port 40510')
 });
-
-const csrfConnections = {};
 
 const wss = new WebSocketServer({
   server: httpsServer,
@@ -57,17 +55,6 @@ const wss = new WebSocketServer({
       return false;
     }
 
-
-    if (csrfConnections.hasOwnProperty(csrf)) {
-      if (csrfConnections[csrf] > 2) {
-
-      }
-    } else {
-      csrfConnections[csrf] = 0;
-    }
-
-    csrfConnections[csrf] += 1;
-
     return true;
   }
 });
@@ -96,7 +83,7 @@ wss.on('headers', (headers) => {
   headers.push('Set-Cookie: my-cookie=qwerty');
 });
 wss.on('connection', (ws, req) => {
-  limit(ws);
+  limit(ws, req);
   ws.isAlive = true;
 
   console.log('---------Connection Opened---------');
@@ -119,7 +106,7 @@ wss.on('connection', (ws, req) => {
   });
 
   ws.on('limited', data => {
-    console.log('----------------Limited `' + data + '` !--------------------');
+    console.log('----------------Rate Limited `' + data + '` !--------------------');
     console.log(data);
   })
 
