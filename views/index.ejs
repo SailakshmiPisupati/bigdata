@@ -1,23 +1,12 @@
-<p>Client IP address: <span id="ip_address"></span></p>
-<p>WebSocket address: wss://localhost:40510</p>
-
-<form id="form">
-    <input type="text" value="Hello world" id="message">
-    <input type="submit" value="Go">
-</form>
-
-<h4>Messages </h4>
-
-<div id="messages" style="border: 1px solid; font-size: 12px;">
-</div>
-
 <script>
     'use strict';
 
     var ws = null;
-    var csrfToken = '<%= csrfToken %>';
+    const csrfToken = '<%= csrfToken %>';
+    const URL = "ws://localhost:40510";
 
     $(() => {
+        $('#websocket_address').text(URL);
         window.fetchIP();
 
         function start(){

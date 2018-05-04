@@ -22,4 +22,11 @@ router.get('/unsec', csrfProtection, function(req, res, next) {
   });
 });
 
+router.get('/dos_attack', csrfProtection, function(req, res, next) {
+  res.render('dos_attack', {
+    title: 'Unsecure Web Socket - Denial of Service (DoS) Attack',
+    csrfToken: null
+  });
+});
+
 module.exports = router;

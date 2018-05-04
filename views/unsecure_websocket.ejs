@@ -1,35 +1,29 @@
-<p>WebSocket address: wss://localhost:40510</p>
-
-<form id="form">
-    <input type="text" value="Hello world" id="message">
-    <input type="submit" value="Go">
-</form>
-
-<h4>Messages </h4>
-
-<div id="messages" style="border: 1px solid; font-size: 12px;">
-</div>
-
 <script>
     'use strict';
 
     var ws = null;
+    const URL = "ws://localhost:40510";
 
     $(() => {
+        $('#websocket_address').text(URL);
+        $('#websocket_status').text('CONNECTING...');
+
         function start(){
-            ws = new WebSocket("wss://localhost:40510");
+            ws = new WebSocket(URL);
 
             ws.onopen = function(){
                 console.log('Websocket connected!');
+                $('#websocket_status').text('CONNECTED');
             };
 
             ws.onmessage = function(e){
                 console.log('Message received', e.data);
-                $("#messages").prepend("<p>" + e.data + "</p>");
+                $("#messages").append("<p>Server: " + e.data + "</p>");
             };
 
-            ws.onclose = function(){
-                console.log('Websocket closed!');
+            ws.onclose = function(error){
+                console.log('Websocket closed!', error);
+                $('#websocket_status').text('CLOSED');
                 restart();
             };
 
@@ -45,19 +39,7 @@
         $( "#form" ).submit(function( e ) {
             e.preventDefault();
             ws.send($('#message').val());
+            $("#messages").prepend("<p> Client: " + $('#message').val() + "</p>");
         });
     });
-
-  /** Example of a DoS attack **
-
-      setInterval( () => {
-          let ws1 = new WebSocket('ws://localhost:40510')
-
-          ws1.onopen = function () {
-              console.log('Websocket Connected!')
-              ws.send('Websocket Connected!')
-          }
-      }, 1000)
-  */
-
 </script>

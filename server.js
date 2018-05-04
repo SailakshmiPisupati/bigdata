@@ -6,10 +6,11 @@ const express = require('express'),
       fs = require("fs"),
       https = require("https"),
       http = require('http'),
-      forceSsl = require('express-force-ssl'),
+      // forceSsl = require('express-force-ssl'),
       csrf = require('csurf'),
       cookieParser = require('cookie-parser'),
-      indexRouter = require('./router.js');
+      indexRouter = require('./router.js')
+      createError = require('http-errors');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -20,16 +21,18 @@ app.use(express.json());
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
-app.use(forceSsl);
-app.set('forceSSLOptions', {
-  enable301Redirects: true,
-  trustXFPHeader: false,
-  httpsPort: 3001,
-  sslRequiredMessage: 'SSL Required.'
-});
+// app.use(forceSsl);
+// app.set('forceSSLOptions', {
+//   enable301Redirects: true,
+//   trustXFPHeader: false,
+//   httpsPort: 3001,
+//   sslRequiredMessage: 'SSL Required.'
+// });
 
 app.use(function (req, res, next) {
     res.locals.title = 'Web Socket - Example';
+    res.locals.csrfToken = null;
+
     next();
 });
 
