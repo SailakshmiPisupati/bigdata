@@ -1,4 +1,5 @@
 const express = require('express'),
+      expressLayouts = require('express-ejs-layouts'),
       path = require('path'),
       ws = require('./ws'),
       app = express(),
@@ -12,6 +13,9 @@ const express = require('express'),
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('view options', {layout: 'layout.ejs'});
+
+app.use(expressLayouts);
 app.use(express.json());
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')));
@@ -22,6 +26,11 @@ app.set('forceSSLOptions', {
   trustXFPHeader: false,
   httpsPort: 3001,
   sslRequiredMessage: 'SSL Required.'
+});
+
+app.use(function (req, res, next) {
+    res.locals.title = 'Web Socket - Example';
+    next();
 });
 
 app.use('/', indexRouter);

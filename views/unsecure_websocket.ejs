@@ -1,4 +1,3 @@
-<p>Client IP address: <span id="ip_address"></span></p>
 <p>WebSocket address: wss://localhost:40510</p>
 
 <form id="form">
@@ -15,11 +14,8 @@
     'use strict';
 
     var ws = null;
-    var csrfToken = '<%= csrfToken %>';
 
     $(() => {
-        window.fetchIP();
-
         function start(){
             ws = new WebSocket("wss://localhost:40510");
 

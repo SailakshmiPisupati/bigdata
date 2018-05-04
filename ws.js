@@ -35,7 +35,6 @@ const wss = new WebSocketServer({
     console.log('remoteAddress: ', info.req.connection.remoteAddress);
     // console.log('info.req.headers: ', Object.keys(info.req.headers));
 
-
     let cookies = parseCookies(info.req.headers.cookie);
     console.log('Cookies: ', cookies);
 
@@ -96,17 +95,16 @@ wss.on('connection', (ws, req) => {
   })
 
   ws.on('pong', () => {
-    console.log('---------PONG---------');
     this.isAlive = true;
   });
 
   ws.on('close', () => {
-    console.log('----------------Connection Closed--------------------');
+    console.log('---------Connection Closed---------');
     clearInterval(sendInterval);
   });
 
   ws.on('limited', data => {
-    console.log('----------------Rate Limited `' + data + '` !--------------------');
+    console.log('Rate Limited `' + data + '`');
     console.log(data);
   })
 
@@ -123,7 +121,7 @@ wss.on('connection', (ws, req) => {
       console.log("Websocket not alive");
     }
 
-  }, 1000)
+  }, 5000)
 
 });
 

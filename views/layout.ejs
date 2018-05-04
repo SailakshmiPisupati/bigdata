@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title><%= title == undefined ? "" : title %></title>
+    <script src="jquery/jquery.min.js"></script>
+    <script src="script.js"></script>
+</head>
+
+<body id="home">
+    <h2><%= title %></h2>
+    <% if(csrfToken != null){ %>
+        <p>CSRF Token: <%= csrfToken %></p>
+    <% } %>
+
+
+    <%- body %>
+
+</body>
+</html>

@@ -9,7 +9,17 @@ var parseForm = bodyParser.urlencoded({ extended: false })
 
 /* GET home page. */
 router.get('/', csrfProtection, function(req, res, next) {
-  res.render('index', { csrfToken: req.csrfToken() });
+  res.render('index', {
+    title: 'Web Socket - Example',
+    csrfToken: req.csrfToken()
+  });
+});
+
+router.get('/unsec', csrfProtection, function(req, res, next) {
+  res.render('unsecure_websocket', {
+    title: 'Unsecure Web Socket - Example',
+    csrfToken: null
+  });
 });
 
 module.exports = router;
