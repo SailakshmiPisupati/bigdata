@@ -42,9 +42,10 @@ function rateLimit (rate, max) {
       function ratedListener (data, flags) {
         if (client.messageCount++ >= max) {
           client.emit('limited', data, flags)
+          console.log('Message rate limiting', data);
         } else if (IPAddresses[ip_address]++ >= max) {
           client.emit('limited', data, flags)
-          console.log('IP rate limiting');
+          console.log('Connection rate limiting');
         } else {
           listener(data, flags)
         }

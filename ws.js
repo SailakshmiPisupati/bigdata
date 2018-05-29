@@ -59,11 +59,11 @@ const wss = new WebSocketServer({
       return false;
     }
 
-    if (!info.secure) {
-      console.log("------Connection not secure, terminating connection !------");
+    // if (!info.secure) {
+    //   console.log("------Connection not secure, terminating connection !------");
 
-      return false;
-    }
+    //   return false;
+    // }
 
     return true;
   }
@@ -82,7 +82,7 @@ wss.on('connection', (ws, req) => {
 
   ws.on('message', (message) => {
     // messages.push(message);
-    console.log('---------Received message: %s---------');
+    console.log('---------Received message: '+message+'---------');
   });
 
   ws.on('pong', () => {
@@ -94,9 +94,9 @@ wss.on('connection', (ws, req) => {
     clearInterval(sendInterval);
   });
 
-  ws.on('limited', data => {
-    console.log('Rate Limited `' + data + '`');
-  });
+  // ws.on('limited', data => {
+  //   console.log('Rate Limited `' + data + '`');
+  // });
 
   const sendInterval = setInterval(() => {
     if (ws.isAlive) {
